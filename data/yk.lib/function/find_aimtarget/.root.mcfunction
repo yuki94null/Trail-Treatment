@@ -1,32 +1,28 @@
-# yk.lib:find_aimtarget
+# yk.lib:find_aimtarget/.root
 
-## Rotをとる
+## init
 
-execute store result score $base_rx yk.lib.global run data get entity @s Rotation[1] 1000000
-execute store result score $base_ry yk.lib.global run data get entity @s Rotation[0] 1000000
-
-## 最小値をとるため初期値を最大値に
-
-scoreboard players set $min_value yk.lib.global 2147483647
-
-## 自分自身は除く
-
-tag @s add yk.lib.find_aimtarget.exception
+tag @e remove yk.lib.find_aimtarget.min
+scoreboard players reset @e yk.lib.global
 
 ## 対象を絞る
 
-execute anchored feet positioned ^ ^ ^ as @e[tag=!yk.lib.find_aimtarget.exception] \
+execute anchored feet positioned ^ ^ ^ as @e[distance=0.01..] \
     positioned ^ ^ ^-100000 if entity @s[distance=..100050] positioned ^ ^ ^100000 \
     rotated ~30 ~ positioned ^100000 ^ ^ if entity @s[distance=..100000] positioned ^-100000 ^ ^ rotated ~-30 ~ \
     rotated ~-30 ~ positioned ^-100000 ^ ^ if entity @s[distance=..100000] positioned ^100000 ^ ^ rotated ~30 ~ \
-    run \
-        tag @s add yk.lib.find_aimtarget
+    positioned as @n facing entity @s feet positioned ^ ^ ^1.0 run \
+        function yk.lib:find_aimtarget/summon_marker
 
-## 対象で判定
+## プレイヤーの1.0先から一番近いやつにタグをつける
 
-execute as @e[tag=yk.lib.find_aimtarget] run function yk.lib:find_aimtarget/angle
+execute anchored feet positioned ^ ^ ^ \
+    positioned ^ ^ ^1.0 \
+    as @e[tag=yk.lib.find_aimtarget,tag=!yk.lib.find_aimtarget.marker] \
+    if score @s yk.lib.global = @n[tag=yk.lib.find_aimtarget.marker] yk.lib.global run \
+        tag @s add yk.lib.find_aimtarget.min 
 
 ## タグ外す
 
-tag @e remove yk.lib.find_aimtarget.exception
+kill @e[tag=yk.lib.find_aimtarget.marker]
 tag @e remove yk.lib.find_aimtarget
