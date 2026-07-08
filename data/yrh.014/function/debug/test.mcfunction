@@ -1,1 +1,0 @@
-$say $(id) $(count)
