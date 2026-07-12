@@ -2,5 +2,5 @@
 
 ## Pos入れて死ぬ
 
-data modify storage yk.lib:values BuildHeight.min set from entity @s Pos[1]
+data modify storage yk.lib:outputs BuildHeight.min set from entity @s Pos[1]
 kill @s
